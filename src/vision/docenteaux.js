@@ -5,6 +5,7 @@ import SelectorRauu from "./selectorrauus";
 import SelectorAcd from "./selectoracd";
 import SelectorApex from "./selectorapex";
 import SelectorAaut from "./selectoraaut";
+import ModalCargarPdf from "./cargarpdf";
 
 function DocenteAux({ cerrarSesion }) {
   const nombreDocente = "PEPITO PEREZ";
@@ -19,7 +20,7 @@ function DocenteAux({ cerrarSesion }) {
     "RAC5",
     "RAC5",
     "RAC5",
-    "RAC4"
+    "RAC4",
   ]);
 
   const [mostrarSelectorRauu, setMostrarSelectorRauu] = useState(false);
@@ -31,7 +32,7 @@ function DocenteAux({ cerrarSesion }) {
     "RAUU5",
     "RAUU3",
     "RAUU5",
-    "RAUU2"
+    "RAUU2",
   ]);
 
   const [mostrarSelectorAcd, setMostrarSelectorAcd] = useState(false);
@@ -42,6 +43,8 @@ function DocenteAux({ cerrarSesion }) {
 
   const [mostrarSelectorAaut, setMostrarSelectorAaut] = useState(false);
   const [aautGuardados, setAautGuardados] = useState(["", ""]);
+
+  // Funciones para manejar cada selector (RAC, RAUU, ACD, APEX, AAUT)
 
   const abrirSelectorRac = (indice) => {
     setIndiceRacActivo(indice);
@@ -77,7 +80,7 @@ function DocenteAux({ cerrarSesion }) {
     const seleccionados = [...acds];
 
     while (seleccionados.length < 2) {
-      seleccionados.push("");
+      seleccionados.push(""); // Aseguramos que siempre haya dos valores
     }
 
     setAcdsGuardados(seleccionados);
@@ -92,7 +95,7 @@ function DocenteAux({ cerrarSesion }) {
     const seleccionados = [...apex];
 
     while (seleccionados.length < 2) {
-      seleccionados.push("");
+      seleccionados.push(""); // Aseguramos que siempre haya dos valores
     }
 
     setApexGuardados(seleccionados);
@@ -100,18 +103,28 @@ function DocenteAux({ cerrarSesion }) {
   };
 
   const abrirSelectorAaut = () => {
-    setMostrarSelectorAaut(true);
+    setMostrarSelectorAaut(true); // Mostrar modal de AAUT
   };
 
   const guardarAautSeleccionado = (aaut) => {
     const seleccionados = [...aaut];
 
     while (seleccionados.length < 2) {
-      seleccionados.push(""); // Asegurarse de que siempre haya dos valores
+      seleccionados.push(""); // Aseguramos que siempre haya dos valores
     }
 
     setAautGuardados(seleccionados);
-    setMostrarSelectorAaut(false);
+    setMostrarSelectorAaut(false); // Cerrar modal de AAUT
+  };
+
+  const [mostrarModalPdf, setMostrarModalPdf] = useState(false);
+
+  const abrirModalPdf = () => {
+    setMostrarModalPdf(true);
+  };
+
+  const cerrarModalPdf = () => {
+    setMostrarModalPdf(false);
   };
 
   return (
@@ -123,7 +136,9 @@ function DocenteAux({ cerrarSesion }) {
 
       <div className="dashboard-content">
         <div className="dashboard-actions">
-          <button className="btn-upload">Cargar PDF</button>
+          <button className="btn-upload" onClick={abrirModalPdf}>
+            Cargar PDF
+          </button>
 
           <button className="btn-logout" onClick={cerrarSesion}>
             Cerrar sesión
@@ -311,6 +326,8 @@ function DocenteAux({ cerrarSesion }) {
           guardarAautSeleccionado={guardarAautSeleccionado}
         />
       )}
+
+      {mostrarModalPdf && <ModalCargarPdf cerrarModal={cerrarModalPdf} />}
     </main>
   );
 }

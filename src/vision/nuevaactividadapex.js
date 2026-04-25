@@ -12,7 +12,7 @@ function NuevaActividadApex({
       <div className="modal-header-acd">
         <h2>Nuevo APEX</h2>
         <button className="modal-cerrar-acd" onClick={volverVista}>
-          ×
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
