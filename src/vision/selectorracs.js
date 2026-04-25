@@ -18,7 +18,7 @@ function SelectorRac({ cerrarModal, guardarRacSeleccionado }) {
             <div className="modal-header">
               <h2>RAC</h2>
               <button className="modal-cerrar" onClick={cerrarModal}>
-                ×
+                <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
 

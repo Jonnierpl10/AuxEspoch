@@ -55,7 +55,7 @@ function SelectorApex({ cerrarModal, guardarApexSeleccionado }) {
             <div className="modal-header-acd">
               <h2>APEX (3.5)</h2>
               <button className="modal-cerrar-acd" onClick={cerrarModal}>
-                ×
+                <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
 

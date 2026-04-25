@@ -55,7 +55,7 @@ function SelectorAcd({ cerrarModal, guardarAcdSeleccionado }) {
             <div className="modal-header-acd">
               <h2>ACD (3.5)</h2>
               <button className="modal-cerrar-acd" onClick={cerrarModal}>
-                ×
+                <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
 

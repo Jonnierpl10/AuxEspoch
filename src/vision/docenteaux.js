@@ -4,6 +4,7 @@ import SelectorRac from "./selectorracs";
 import SelectorRauu from "./selectorrauus";
 import SelectorAcd from "./selectoracd";
 import SelectorApex from "./selectorapex";
+import SelectorAaut from "./selectoraaut";
 
 function DocenteAux({ cerrarSesion }) {
   const nombreDocente = "PEPITO PEREZ";
@@ -38,6 +39,9 @@ function DocenteAux({ cerrarSesion }) {
 
   const [mostrarSelectorApex, setMostrarSelectorApex] = useState(false);
   const [apexGuardados, setApexGuardados] = useState(["", ""]);
+
+  const [mostrarSelectorAaut, setMostrarSelectorAaut] = useState(false);
+  const [aautGuardados, setAautGuardados] = useState(["", ""]);
 
   const abrirSelectorRac = (indice) => {
     setIndiceRacActivo(indice);
@@ -93,6 +97,21 @@ function DocenteAux({ cerrarSesion }) {
 
     setApexGuardados(seleccionados);
     setMostrarSelectorApex(false);
+  };
+
+  const abrirSelectorAaut = () => {
+    setMostrarSelectorAaut(true);
+  };
+
+  const guardarAautSeleccionado = (aaut) => {
+    const seleccionados = [...aaut];
+
+    while (seleccionados.length < 2) {
+      seleccionados.push(""); // Asegurarse de que siempre haya dos valores
+    }
+
+    setAautGuardados(seleccionados);
+    setMostrarSelectorAaut(false);
   };
 
   return (
@@ -208,21 +227,22 @@ function DocenteAux({ cerrarSesion }) {
                   </th>
 
                   <th colSpan="2" className="th-green">
-                    <button className="btn-celda btn-celda-verde">
+                    <button className="btn-celda btn-celda-verde" onClick={abrirSelectorAaut}>
                       AAUT (3)
                     </button>
                   </th>
                 </tr>
 
                 <tr>
-                  <th>{acdsGuardados[0] || "Tareas en Equipo"}</th>
-                  <th>{acdsGuardados[1] || "Tareas Individuales"}</th>
+                  <th>{acdsGuardados[0] || ""}</th>
+                  <th>{acdsGuardados[1] || ""}</th>
 
-                  <th>{apexGuardados[0] || "PI"}</th>
-                  <th colSpan="2">{apexGuardados[1] || "IF"}</th>
+                  <th>{apexGuardados[0] || ""}</th>
+                  <th colSpan="2">{apexGuardados[1] || ""}</th>
 
-                  <th>Lectura Comp</th>
-                  <th>Examen</th>
+                  <th>{aautGuardados[0] || ""}</th>
+                  <th>{aautGuardados[1] || ""}</th>
+
                 </tr>
               </thead>
 
@@ -282,6 +302,13 @@ function DocenteAux({ cerrarSesion }) {
         <SelectorApex
           cerrarModal={() => setMostrarSelectorApex(false)}
           guardarApexSeleccionado={guardarApexSeleccionado}
+        />
+      )}
+
+      {mostrarSelectorAaut && (
+        <SelectorAaut
+          cerrarModal={() => setMostrarSelectorAaut(false)}
+          guardarAautSeleccionado={guardarAautSeleccionado}
         />
       )}
     </main>
