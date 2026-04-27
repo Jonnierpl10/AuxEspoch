@@ -1,48 +1,63 @@
 import React, { useState } from "react";
-import { pdfjs } from "pdfjs-dist";
 import "../App.css";
 
-function BtnCargarPdf({ cerrarModal }) {
-  const [pdfFile, setPdfFile] = useState(null);
-  const [pdfData, setPdfData] = useState(null);
+function BtnCargarPdf({ setDatosExtraidos }) {
+  const [pdf, setPdf] = useState(null);
+  const [mensajeError, setMensajeError] = useState("");
 
   const manejarCargaPdf = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === "application/pdf") {
-      setPdfFile(file);
-      leerPdf(file);
+    const archivo = e.target.files[0];
+    if (archivo && archivo.type === "application/pdf") {
+      setPdf(archivo);
+      setMensajeError("");
+    } else {
+      setMensajeError("Por favor, selecciona un archivo PDF.");
     }
   };
 
-  const leerPdf = (file) => {
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const typedarray = new Uint8Array(reader.result);
-      const pdf = await pdfjs.getDocument(typedarray).promise;
-      const numPages = pdf.numPages;
-      let data = "";
-      
-      // Extraer texto de todas las páginas
-      for (let i = 1; i <= numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        textContent.items.forEach((item) => {
-          data += item.str + " "; // Concatenar todo el texto extraído
-        });
-      }
+  const manejarArrastreSobreArea = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-      // Aquí puedes extraer los datos específicos del texto.
-      // Como ejemplo, vamos a extraer los primeros resultados como 'No.', 'Cédula', 'Apellidos', etc.
-      const datosExtraidos = {
-        no: data.match(/No\.\s*(\d+)/)?.[1],
-        cedula: data.match(/Cédula:\s*(\d+)/)?.[1],
-        apellidos: data.match(/Apellidos:\s*([A-Za-z\s]+)/)?.[1],
-        nombres: data.match(/Nombres:\s*([A-Za-z\s]+)/)?.[1],
+    const archivo = e.dataTransfer.files[0];
+    if (archivo && archivo.type === "application/pdf") {
+      setPdf(archivo);
+      setMensajeError("");
+    } else {
+      setMensajeError("Por favor, selecciona un archivo PDF.");
+    }
+  };
+
+  const manejarGuardarPdf = () => {
+    if (pdf) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const pdfData = e.target.result;
+        const loadingTask = window.pdfjsLib.getDocument(pdfData);
+        loadingTask.promise.then(function (pdf) {
+          pdf.getPage(1).then(function (page) {
+            page.getTextContent().then(function (textContent) {
+              const texto = textContent.items.map(item => item.str).join(' ');
+
+              const datos = extraerDatos(texto);
+
+              setDatosExtraidos(datos);
+            });
+          });
+        });
       };
-      
-      setPdfData(datosExtraidos);
+      reader.readAsArrayBuffer(pdf);
+    }
+  };
+
+  const extraerDatos = (texto) => {
+    const datos = {
+      No: "", 
+      Cedula: "",
+      Apellidos: "",
+      Nombres: ""
     };
-    reader.readAsArrayBuffer(file);
+    return datos;
   };
 
   return (
@@ -50,30 +65,41 @@ function BtnCargarPdf({ cerrarModal }) {
       <div className="modal-contenido">
         <div className="modal-header">
           <h2>Cargar PDF</h2>
-          <button className="modal-cerrar" onClick={cerrarModal}>
-            ×
+          <button className="modal-cerrar" onClick={() => setDatosExtraidos(null)}>
+            <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
 
-        <div className="modal-body">
-          <input type="file" onChange={manejarCargaPdf} accept="application/pdf" />
-          <div>
-            {pdfData ? (
-              <div>
-                <p>No.: {pdfData.no}</p>
-                <p>Cédula: {pdfData.cedula}</p>
-                <p>Apellidos: {pdfData.apellidos}</p>
-                <p>Nombres: {pdfData.nombres}</p>
-              </div>
-            ) : (
-              <p>No se ha cargado ningún archivo PDF.</p>
-            )}
-          </div>
+        <div
+          className="modal-body"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={manejarArrastreSobreArea}
+        >
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={manejarCargaPdf}
+            className="file-input"
+            id="fileInput"
+          />
+          
+          <label 
+            htmlFor="fileInput" 
+            className="drop-area" 
+            style={{ cursor: "pointer" }}
+          >
+            <span>Arrastra un archivo PDF aquí o haz clic para seleccionar</span>
+          </label>
+          
+          <p className="archivo-info">
+            {pdf ? pdf.name : "No se eligió ningún archivo"}
+          </p>
+          <p className="mensaje-error">{mensajeError}</p>
         </div>
 
         <div className="modal-footer">
-          <button className="btn-modal" onClick={cerrarModal}>
-            Cerrar
+          <button className="btn-modal" onClick={manejarGuardarPdf} disabled={!pdf}>
+            Cargar
           </button>
         </div>
       </div>

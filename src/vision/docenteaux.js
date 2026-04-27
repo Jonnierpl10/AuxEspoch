@@ -11,6 +11,9 @@ function DocenteAux({ cerrarSesion }) {
   const nombreDocente = "PEPITO PEREZ";
   const [periodoAcademico, setPeriodoAcademico] = useState("2025-09-01");
 
+  // Estado para almacenar los datos extraídos de los PDFs
+  const [datosExtraidos, setDatosExtraidos] = useState([]);
+
   const [mostrarSelectorRac, setMostrarSelectorRac] = useState(false);
   const [indiceRacActivo, setIndiceRacActivo] = useState(null);
   const [racsGuardados, setRacsGuardados] = useState([
@@ -43,8 +46,6 @@ function DocenteAux({ cerrarSesion }) {
 
   const [mostrarSelectorAaut, setMostrarSelectorAaut] = useState(false);
   const [aautGuardados, setAautGuardados] = useState(["", ""]);
-
-  // Funciones para manejar cada selector (RAC, RAUU, ACD, APEX, AAUT)
 
   const abrirSelectorRac = (indice) => {
     setIndiceRacActivo(indice);
@@ -80,7 +81,7 @@ function DocenteAux({ cerrarSesion }) {
     const seleccionados = [...acds];
 
     while (seleccionados.length < 2) {
-      seleccionados.push(""); // Aseguramos que siempre haya dos valores
+      seleccionados.push("");
     }
 
     setAcdsGuardados(seleccionados);
@@ -95,7 +96,7 @@ function DocenteAux({ cerrarSesion }) {
     const seleccionados = [...apex];
 
     while (seleccionados.length < 2) {
-      seleccionados.push(""); // Aseguramos que siempre haya dos valores
+      seleccionados.push("");
     }
 
     setApexGuardados(seleccionados);
@@ -103,18 +104,18 @@ function DocenteAux({ cerrarSesion }) {
   };
 
   const abrirSelectorAaut = () => {
-    setMostrarSelectorAaut(true); // Mostrar modal de AAUT
+    setMostrarSelectorAaut(true);
   };
 
   const guardarAautSeleccionado = (aaut) => {
     const seleccionados = [...aaut];
 
     while (seleccionados.length < 2) {
-      seleccionados.push(""); // Aseguramos que siempre haya dos valores
+      seleccionados.push("");
     }
 
     setAautGuardados(seleccionados);
-    setMostrarSelectorAaut(false); // Cerrar modal de AAUT
+    setMostrarSelectorAaut(false);
   };
 
   const [mostrarModalPdf, setMostrarModalPdf] = useState(false);
@@ -127,6 +128,101 @@ function DocenteAux({ cerrarSesion }) {
     setMostrarModalPdf(false);
   };
 
+  const handleInputChange = (e, field, index) => {
+    const newData = [...datosExtraidos];
+    const newValue = parseFloat(e.target.value);
+
+    if (field === 'ACD1' || field === 'ACD2') {
+      const totalACD = (newData[index].ACD1 || 0) + (newData[index].ACD2 || 0);
+
+      if (totalACD <= 3.5) {
+        newData[index][field] = newValue;
+      } else {
+
+        alert('La suma de ACD1 y ACD2 no puede exceder 3.5');
+
+        if (field === 'ACD1') {
+          newData[index].ACD1 = 3.5 - newData[index].ACD2;
+        } else {
+          newData[index].ACD2 = 3.5 - newData[index].ACD1;
+        }
+      }
+    } else {
+      newData[index][field] = newValue;
+    }
+    calcularSumatoria(index);
+    setDatosExtraidos(newData);
+  };
+
+  const handleInputChangeApex = (e, field, index) => {
+    const newData = [...datosExtraidos];
+    const newValue = parseFloat(e.target.value);
+
+
+    if (field === 'APEX1' || field === 'APEX2') {
+      const totalAPEX = (newData[index].APEX1 || 0) + (newData[index].APEX2 || 0);
+
+      if (totalAPEX <= 3.5) {
+        newData[index][field] = newValue;
+      } else {
+
+        alert('La suma de APEX1 y APEX2 no puede exceder 3.5');
+
+        if (field === 'APEX1') {
+          newData[index].APEX1 = 3.5 - newData[index].APEX2;
+        } else {
+          newData[index].APEX2 = 3.5 - newData[index].APEX1;
+        }
+      }
+    } else {
+      newData[index][field] = newValue;
+    }
+    calcularSumatoria(index);
+    setDatosExtraidos(newData);
+  };
+
+  const handleInputChangeAAUT = (e, field, index) => {
+    const newData = [...datosExtraidos];
+    const newValue = parseFloat(e.target.value);
+
+    if (field === 'AAUT1' || field === 'AAUT2') {
+      const totalAAUT = (newData[index].AAUT1 || 0) + (newData[index].AAUT2 || 0);
+
+      if (totalAAUT <= 3) {
+        newData[index][field] = newValue;
+      } else {
+
+        alert('La suma de AAUT1 y AAUT2 no puede exceder 3');
+
+        if (field === 'AAUT1') {
+          newData[index].AAUT1 = 3 - newData[index].AAUT2;
+        } else {
+          newData[index].AAUT2 = 3 - newData[index].AAUT1;
+        }
+      }
+    } else {
+      newData[index][field] = newValue;
+    }
+    calcularSumatoria(index);
+    setDatosExtraidos(newData);
+  };
+
+  const calcularSumatoria = (index) => {
+    const newData = [...datosExtraidos];
+
+    const total =
+      (newData[index].ACD1 || 0) +
+      (newData[index].ACD2 || 0) +
+      (newData[index].APEX1 || 0) +
+      (newData[index].APEX2 || 0) +
+      (newData[index].AAUT1 || 0) +
+      (newData[index].AAUT2 || 0);
+
+    newData[index].sumatoria = total;
+    newData[index].NotaFinal = total;
+    setDatosExtraidos(newData);
+  };
+
   return (
     <main className="dashboard-page">
       <div className="dashboard-header">
@@ -135,6 +231,9 @@ function DocenteAux({ cerrarSesion }) {
       </div>
 
       <div className="dashboard-content">
+        <div className="download-btn-container">
+          <button className="btn-download">Descargar Notas</button>
+        </div>
         <div className="dashboard-actions">
           <button className="btn-upload" onClick={abrirModalPdf}>
             Cargar PDF
@@ -262,24 +361,60 @@ function DocenteAux({ cerrarSesion }) {
               </thead>
 
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>220027839-4</td>
-                  <td>ALCIVAR NOA</td>
-                  <td>JOHN EDUARDO</td>
+                {datosExtraidos.map((estudiante, index) => (
+                  <tr key={index}>
+                    <td>{estudiante.No}</td>
+                    <td>{estudiante.Cedula}</td>
+                    <td>{estudiante.Apellidos}</td>
+                    <td>{estudiante.Nombres}</td>
+                    <td>
+                      <input
+                        type="number"
+                        value={estudiante.ACD1 || ""}
+                        onChange={(e) => handleInputChange(e, 'ACD1', index)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={estudiante.ACD2 || ""}
+                        onChange={(e) => handleInputChange(e, 'ACD2', index)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={estudiante.APEX1 || ""}
+                        onChange={(e) => handleInputChangeApex(e, 'APEX1', index)}
+                      />
+                    </td>
+                    <td colSpan="2">
+                      <input
+                        type="number"
+                        value={estudiante.APEX2 || ""}
+                        onChange={(e) => handleInputChange(e, 'APEX2', index)}
+                        style={{ width: '100%' }}
+                      />
+                    </td>
 
-                  <td>1.27</td>
-                  <td>1.80</td>
-
-                  <td>1.50</td>
-                  <td colSpan="2">0.87</td>
-
-                  <td>0.30</td>
-                  <td>1.90</td>
-
-                  <td>6.74</td>
-                  <td>6.74</td>
-                </tr>
+                    <td>
+                      <input
+                        type="number"
+                        value={estudiante.AAUT1 || ""}
+                        onChange={(e) => handleInputChangeAAUT(e, 'AAUT1', index)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={estudiante.AAUT2 || ""}
+                        onChange={(e) => handleInputChangeAAUT(e, 'AAUT2', index)}
+                      />
+                    </td>
+                    <td>{estudiante.sumatoria || ""}</td>
+                    <td>{estudiante.NotaFinal || ""}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -327,7 +462,7 @@ function DocenteAux({ cerrarSesion }) {
         />
       )}
 
-      {mostrarModalPdf && <ModalCargarPdf cerrarModal={cerrarModalPdf} />}
+      {mostrarModalPdf && <ModalCargarPdf cerrarModal={cerrarModalPdf} setDatosExtraidos={setDatosExtraidos} />}
     </main>
   );
 }

@@ -1108,3 +1108,27 @@ body {
   font-size: 14px;
   color: #444;
 }
+
+/* Estilo para el contenedor del botón */
+.download-btn-container {
+  display: flex;
+  justify-content: flex-start; /* Alinea el botón a la izquierda */
+  padding: 10px 0; /* Espacio alrededor del botón */
+}
+
+/* Estilo para el botón */
+.btn-download {
+  background-color: #4CAF50; /* Color de fondo verde */
+  color: white; /* Color del texto */
+  border: none; /* Sin bordes */
+  padding: 10px 20px; /* Espaciado dentro del botón */
+  text-align: center; /* Centra el texto dentro del botón */
+  font-size: 16px; /* Tamaño de la fuente */
+  border-radius: 5px; /* Bordes redondeados */
+  cursor: pointer; /* Cursor en forma de mano al pasar */
+  margin-left: 20px; /* Espacio a la izquierda del botón */
+}
+
+.btn-download:hover {
+  background-color: #45a049; /* Cambia el color de fondo cuando se pasa el mouse */
+}
